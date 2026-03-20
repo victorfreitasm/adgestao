@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Sistema de Gestão Escolar"
+version = "1.0.0"
+id = "artifacts/escola"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 18934
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/escola run dev"
+
+[services.env]
+PORT = "18934"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/escola", "run", "build"]
+publicDir = "artifacts/escola/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

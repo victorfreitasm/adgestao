@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardápio - E.E. Prof. Antonio Dantas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="sidebar-mobile" id="sidebar-mobile">
+  <strong style="font-size:13px; color:var(--text-muted); padding:4px 8px;">MENU</strong>
+  <a href="#" id="link-painel">🏠 Painel</a>
+  <a href="cardapio.html" class="active">🍽️ Cardápio</a>
+  <a href="cronograma.html">📅 Cronograma</a>
+  <a href="informacoes.html">📋 Informações</a>
+  <hr style="border:1px solid var(--border); margin:8px 0;"/>
+  <a href="#" onclick="fazerLogout(); return false;">🚪 Sair</a>
+</div>
+
+<nav class="navbar">
+  <a href="#" id="nav-link-painel" class="navbar-brand">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="logo-text">E.E. Prof. Antonio Dantas</div>
+      <div class="logo-sub">Gestão Escolar</div>
+    </div>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="#" id="nav-painel-link">🏠 Painel</a></li>
+    <li><a href="cardapio.html">🍽️ Cardápio</a></li>
+    <li><a href="cronograma.html">📅 Cronograma</a></li>
+    <li><a href="informacoes.html">📋 Informações</a></li>
+  </ul>
+  <div class="navbar-right">
+    <div class="user-badge">
+      <div class="avatar" id="navbar-avatar">?</div>
+      <div>
+        <div style="font-weight:600; font-size:12px;" id="navbar-nome">Usuário</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="navbar-tipo">-</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="fazerLogout()">Sair</button>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1>🍽️ Cardápio da Semana</h1>
+      <p>Confira o almoço de cada dia da semana</p>
+    </div>
+    <button id="btn-editar-cardapio" class="btn btn-primary" style="display:none;" onclick="abrirModalEdicao()">
+      ✏️ Editar Cardápio
+    </button>
+  </div>
+
+  <!-- Hoje -->
+  <div class="card section" id="card-hoje" style="border-left:4px solid var(--primary);">
+    <div class="card-header" style="background:var(--primary-bg);">
+      <h2>⭐ Cardápio de Hoje — <span id="titulo-hoje"></span></h2>
+      <span class="badge badge-blue">Hoje</span>
+    </div>
+    <div class="card-body" id="cardapio-hoje-detalhe"></div>
+  </div>
+
+  <div class="section-title">📅 Cardápio Completo da Semana</div>
+  <div class="grid-2" id="grid-semana"></div>
+
+</main>
+
+<!-- Modal: Editar Cardápio -->
+<div class="modal-overlay" id="modal-editar-cardapio">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h2>✏️ Editar Cardápio</h2>
+      <button class="modal-close" onclick="fecharModal('modal-editar-cardapio')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Dia da Semana</label>
+      <select id="edit-dia" class="form-control" onchange="carregarDiaParaEdicao()">
+        <option value="segunda">Segunda-feira</option>
+        <option value="terca">Terça-feira</option>
+        <option value="quarta">Quarta-feira</option>
+        <option value="quinta">Quinta-feira</option>
+        <option value="sexta">Sexta-feira</option>
+      </select>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Prato Principal</label>
+        <input type="text" id="edit-prato" class="form-control" placeholder="Ex: Paçoca" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Acompanhamento</label>
+        <input type="text" id="edit-acomp" class="form-control" placeholder="Ex: Arroz de leite" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Salada</label>
+        <input type="text" id="edit-salada" class="form-control" placeholder="Ex: Salada" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Suco</label>
+        <input type="text" id="edit-suco" class="form-control" placeholder="Ex: Suco de cajarana" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-editar-cardapio')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCardapio()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/dados.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  const usuario = exigirLogin();
+  preencherNavbar(usuario);
+  inicializarHamburger();
+
+  const painelLink = usuario.tipo === 'admin' ? 'dashboard-admin.html' : 'dashboard-tutor.html';
+  document.getElementById('link-painel').href = painelLink;
+  document.getElementById('nav-painel-link').href = painelLink;
+  document.getElementById('nav-link-painel').href = painelLink;
+
+  if (usuario.tipo === 'admin') {
+    document.getElementById('btn-editar-cardapio').style.display = 'flex';
+  }
+
+  const DIAS_LABELS = { segunda:'Segunda-feira', terca:'Terça-feira', quarta:'Quarta-feira', quinta:'Quinta-feira', sexta:'Sexta-feira' };
+  const ICONES_DIAS = { segunda:'🌅', terca:'🌤️', quarta:'☀️', quinta:'🌈', sexta:'🎉' };
+
+  function renderizarMenu(menu) {
+    if (!menu) return '<p style="color:var(--text-muted);font-size:13px;">Cardápio não disponível</p>';
+    return `
+      <div class="menu-section"><h4>🥩 Prato Principal</h4>
+        <div class="menu-items"><span class="menu-item">🍖 ${menu.prato_principal}</span></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;">
+        <div class="menu-section" style="flex:1;min-width:160px;"><h4>🍚 Acompanhamentos</h4>
+          <div class="menu-items">
+            <span class="menu-item">🍚 ${menu.acompanhamento}</span>
+          </div>
+        </div>
+        <div class="menu-section" style="flex:1;min-width:160px;"><h4>🥗 Salada</h4>
+          <div class="menu-items"><span class="menu-item">🥗 ${menu.salada}</span></div>
+        </div>
+      </div>
+      <div class="menu-section"><h4>🍬 Sobremesa & Suco</h4>
+        <div class="menu-items">
+          <span class="menu-item">🧃 ${menu.suco}</span>
+        </div>
+      </div>`;
+  }
+
+  function renderizarCardapio() {
+    const cardapio = JSON.parse(localStorage.getItem('escola_cardapio') || '{}');
+    const diaAtual = diaSemanaAtual();
+    const menuHoje = cardapio[diaAtual];
+    document.getElementById('titulo-hoje').textContent = DIAS_LABELS[diaAtual] || capitalizar(diaAtual);
+    document.getElementById('cardapio-hoje-detalhe').innerHTML = renderizarMenu(menuHoje);
+    if (!menuHoje) document.getElementById('card-hoje').style.display = 'none';
+
+    const grid = document.getElementById('grid-semana');
+    const diasOrdem = ['segunda','terca','quarta','quinta','sexta'];
+    grid.innerHTML = diasOrdem.map(dia => {
+      const menu = cardapio[dia];
+      const isAtual = dia === diaAtual;
+      return `<div class="card" style="${isAtual ? 'border:2px solid var(--primary);' : ''}">
+        <div class="card-header" style="${isAtual ? 'background:var(--primary-bg);' : ''}">
+          <h3>${ICONES_DIAS[dia]||'📅'} ${DIAS_LABELS[dia]}</h3>
+          ${isAtual ? '<span class="badge badge-blue">Hoje</span>' : ''}
+        </div>
+        <div class="card-body">${renderizarMenu(menu)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function abrirModalEdicao() {
+    abrirModal('modal-editar-cardapio');
+    const diasValidos = ['segunda','terca','quarta','quinta','sexta'];
+    const diaAtual = diaSemanaAtual();
+    document.getElementById('edit-dia').value = diasValidos.includes(diaAtual) ? diaAtual : 'segunda';
+    carregarDiaParaEdicao();
+  }
+
+  function carregarDiaParaEdicao() {
+    const dia = document.getElementById('edit-dia').value;
+    const cardapio = JSON.parse(localStorage.getItem('escola_cardapio') || '{}');
+    const menu = cardapio[dia] || {};
+    document.getElementById('edit-prato').value = menu.prato_principal || '';
+    document.getElementById('edit-acomp').value = menu.acompanhamento || '';
+    document.getElementById('edit-salada').value = menu.salada || '';
+    document.getElementById('edit-suco').value = menu.suco || '';
+  }
+
+  function salvarCardapio() {
+    const dia = document.getElementById('edit-dia').value;
+    const cardapio = JSON.parse(localStorage.getItem('escola_cardapio') || '{}');
+    const old = cardapio[dia] || {};
+    cardapio[dia] = {
+      titulo: DIAS_LABELS[dia],
+      prato_principal: document.getElementById('edit-prato').value.trim() || old.prato_principal || '',
+      acompanhamento: document.getElementById('edit-acomp').value.trim() || old.acompanhamento || '',
+      salada: document.getElementById('edit-salada').value.trim() || old.salada || '',
+      suco: document.getElementById('edit-suco').value.trim() || old.suco || ''
+    };
+    localStorage.setItem('escola_cardapio', JSON.stringify(cardapio));
+    fecharModal('modal-editar-cardapio');
+    renderizarCardapio();
+    mostrarToast('Cardápio atualizado com sucesso!', 'success');
+  }
+
+  renderizarCardapio();
+</script>
+
+</body>
+</html>

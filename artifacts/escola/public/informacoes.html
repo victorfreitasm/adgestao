@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Informações - E.E. Prof. Antonio Dantas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="sidebar-mobile" id="sidebar-mobile">
+  <strong style="font-size:13px; color:var(--text-muted); padding:4px 8px;">MENU</strong>
+  <a href="#" id="link-painel">🏠 Painel</a>
+  <a href="cardapio.html">🍽️ Cardápio</a>
+  <a href="cronograma.html">📅 Cronograma</a>
+  <a href="informacoes.html" class="active">📋 Informações</a>
+  <hr style="border:1px solid var(--border); margin:8px 0;"/>
+  <a href="#" onclick="fazerLogout(); return false;">🚪 Sair</a>
+</div>
+
+<nav class="navbar">
+  <a href="#" id="nav-link-painel" class="navbar-brand">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="logo-text">E.E. Prof. Antonio Dantas</div>
+      <div class="logo-sub">Gestão Escolar</div>
+    </div>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="#" id="nav-painel-link">🏠 Painel</a></li>
+    <li><a href="cardapio.html">🍽️ Cardápio</a></li>
+    <li><a href="cronograma.html">📅 Cronograma</a></li>
+    <li><a href="informacoes.html">📋 Informações</a></li>
+  </ul>
+  <div class="navbar-right">
+    <div class="user-badge">
+      <div class="avatar" id="navbar-avatar">?</div>
+      <div>
+        <div style="font-weight:600; font-size:12px;" id="navbar-nome">Usuário</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="navbar-tipo">-</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="fazerLogout()">Sair</button>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <div class="page-header">
+    <h1>📋 Informações da Escola</h1>
+    <p>Regras, contatos e avisos gerais</p>
+  </div>
+
+  <!-- Destaque da escola -->
+  <div class="card section" style="border-left:4px solid var(--primary);">
+    <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div style="font-size:48px;">🏫</div>
+      <div>
+        <h2 style="font-size:20px;margin-bottom:4px;">Escola Estadual Professor Antonio Dantas</h2>
+        <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">Educação de qualidade, formando cidadãos do futuro</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card section">
+        <div class="card-header"><h2>📜 Regras da Escola</h2></div>
+        <div class="card-body"><ul class="rules-list" id="lista-regras"></ul></div>
+      </div>
+      <div class="card section">
+        <div class="card-header"><h2>📞 Contatos por Setor</h2></div>
+        <div class="card-body" id="lista-contatos"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card section">
+        <div class="card-header">
+          <h2>📢 Todos os Avisos</h2>
+          <span class="badge badge-blue" id="qtd-avisos">0</span>
+        </div>
+        <div class="card-body" id="lista-avisos-todos"></div>
+      </div>
+
+      <div class="card section">
+        <div class="card-header"><h2>⚠️ Informações Importantes</h2></div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <span class="alert-icon">ℹ️</span>
+            <div><strong>Horário de Funcionamento</strong><br />Segunda a Sexta: 7h00 às 16h00</div>
+          </div>
+          <div class="alert alert-success">
+            <span class="alert-icon">🍽️</span>
+            <div><strong>Almoço Escolar</strong><br />Servido das 11h30 às 12h30. Tutores devem informar o número de alunos até as 09:00.</div>
+          </div>
+          <div class="alert alert-danger">
+            <span class="alert-icon">🚫</span>
+            <div><strong>Celulares</strong><br />Uso de celulares em sala de aula é proibido sem autorização do professor.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/dados.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  const usuario = exigirLogin();
+  preencherNavbar(usuario);
+  inicializarHamburger();
+  const painelLink = usuario.tipo === 'admin' ? 'dashboard-admin.html' : 'dashboard-tutor.html';
+  document.getElementById('link-painel').href = painelLink;
+  document.getElementById('nav-painel-link').href = painelLink;
+  document.getElementById('nav-link-painel').href = painelLink;
+
+  function renderizarInformacoes() {
+    const info = JSON.parse(localStorage.getItem('escola_informacoes') || '{}');
+    const regras = info.regras || [];
+    document.getElementById('lista-regras').innerHTML = regras.map(r => `<li>${r}</li>`).join('');
+
+    const contatos = info.contatos || [];
+    document.getElementById('lista-contatos').innerHTML = `
+      <table>
+        <thead><tr><th>Setor</th><th>Telefone</th><th>Horário</th></tr></thead>
+        <tbody>${contatos.map(c => `
+          <tr>
+            <td><strong>${c.setor}</strong></td>
+            <td style="font-size:13px;">${c.telefone}</td>
+            <td style="font-size:12px;color:var(--text-muted);">${c.horario}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  function renderizarAvisos() {
+    const avisos = JSON.parse(localStorage.getItem('escola_avisos') || '[]')
+      .filter(a => a.ativo).sort((a, b) => b.id - a.id);
+    const c = document.getElementById('lista-avisos-todos');
+    document.getElementById('qtd-avisos').textContent = avisos.length;
+    if (!avisos.length) {
+      c.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Nenhum aviso no momento.</p></div>`;
+      return;
+    }
+    c.innerHTML = avisos.map(a => `
+      <div class="aviso-card ${a.tipo}">
+        <div class="aviso-header">
+          <span class="aviso-titulo">${a.titulo}</span>
+          <span class="aviso-data">${a.data}</span>
+        </div>
+        <p class="aviso-corpo">${a.corpo}</p>
+        <div class="aviso-footer">
+          <span class="badge ${a.tipo === 'urgente' ? 'badge-red' : a.tipo === 'importante' ? 'badge-orange' : 'badge-blue'}">
+            ${a.tipo === 'urgente' ? '🚨 Urgente' : a.tipo === 'importante' ? '⚠️ Importante' : '📢 Informativo'}
+          </span>
+          <span style="font-size:11px;color:var(--text-muted);">— ${a.autor}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  renderizarInformacoes();
+  renderizarAvisos();
+</script>
+
+</body>
+</html>

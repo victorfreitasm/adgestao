@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Escola Estadual Professor Antonio Dantas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Página de Login -->
+<div class="login-page">
+  <div class="login-container">
+
+    <!-- Logo e Nome da Escola -->
+    <div class="login-logo">
+      <div class="icon">🏫</div>
+      <h1>Escola Estadual Professor Antonio Dantas</h1>
+      <p>Sistema de Gestão Escolar</p>
+    </div>
+
+    <!-- Card de Login -->
+    <div class="login-card">
+      <h2>Entrar no Sistema</h2>
+      <p>Faça login com seu e-mail e senha</p>
+
+      <!-- Mensagem de erro -->
+      <div id="msg-erro" class="alert alert-danger" style="display:none;">
+        <span class="alert-icon">✕</span>
+        <span id="msg-erro-texto">E-mail ou senha inválidos.</span>
+      </div>
+
+      <!-- Formulário de Login -->
+      <form id="form-login" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">
+            E-mail <span class="required">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            placeholder="seu@email.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="senha">
+            Senha <span class="required">*</span>
+          </label>
+          <input
+            type="password"
+            id="senha"
+            class="form-control"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="btn-entrar">
+          🔑 Entrar
+        </button>
+      </form>
+
+      <!-- Credenciais de Demonstração -->
+      <div class="credentials-demo">
+        <h4>👤 Usuários para Teste</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>E-mail</th>
+              <th>Senha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Administrador</td>
+              <td>admin@escola.br</td>
+              <td>admin123</td>
+            </tr>
+            <tr>
+              <td>Direção</td>
+              <td>direcao@escola.br</td>
+              <td>direcao123</td>
+            </tr>
+            <tr>
+              <td>Tutor</td>
+              <td>bryan@escola.br</td>
+              <td>tutor123</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/dados.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Se já está logado, redireciona para o painel correto
+  const usuarioAtual = obterUsuarioLogado();
+  if (usuarioAtual) {
+    window.location.href = usuarioAtual.tipo === 'admin'
+      ? 'dashboard-admin.html'
+      : 'dashboard-tutor.html';
+  }
+
+  // Processa o formulário de login
+  document.getElementById('form-login').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const btnEntrar = document.getElementById('btn-entrar');
+    const msgErro = document.getElementById('msg-erro');
+
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = 'Entrando...';
+    msgErro.style.display = 'none';
+
+    setTimeout(() => {
+      const usuario = fazerLogin(email, senha);
+      if (usuario) {
+        window.location.href = usuario.tipo === 'admin'
+          ? 'dashboard-admin.html'
+          : 'dashboard-tutor.html';
+      } else {
+        document.getElementById('msg-erro-texto').textContent =
+          'E-mail ou senha inválidos. Verifique os dados e tente novamente.';
+        msgErro.style.display = 'flex';
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = '🔑 Entrar';
+        document.getElementById('senha').value = '';
+        document.getElementById('senha').focus();
+      }
+    }, 400);
+  });
+</script>
+
+</body>
+</html>

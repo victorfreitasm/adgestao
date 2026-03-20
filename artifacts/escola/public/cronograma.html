@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cronograma - E.E. Prof. Antonio Dantas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="sidebar-mobile" id="sidebar-mobile">
+  <strong style="font-size:13px; color:var(--text-muted); padding:4px 8px;">MENU</strong>
+  <a href="#" id="link-painel">🏠 Painel</a>
+  <a href="cardapio.html">🍽️ Cardápio</a>
+  <a href="cronograma.html" class="active">📅 Cronograma</a>
+  <a href="informacoes.html">📋 Informações</a>
+  <hr style="border:1px solid var(--border); margin:8px 0;"/>
+  <a href="#" onclick="fazerLogout(); return false;">🚪 Sair</a>
+</div>
+
+<nav class="navbar">
+  <a href="#" id="nav-link-painel" class="navbar-brand">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="logo-text">E.E. Prof. Antonio Dantas</div>
+      <div class="logo-sub">Gestão Escolar</div>
+    </div>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="#" id="nav-painel-link">🏠 Painel</a></li>
+    <li><a href="cardapio.html">🍽️ Cardápio</a></li>
+    <li><a href="cronograma.html">📅 Cronograma</a></li>
+    <li><a href="informacoes.html">📋 Informações</a></li>
+  </ul>
+  <div class="navbar-right">
+    <div class="user-badge">
+      <div class="avatar" id="navbar-avatar">?</div>
+      <div>
+        <div style="font-weight:600; font-size:12px;" id="navbar-nome">Usuário</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="navbar-tipo">-</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="fazerLogout()">Sair</button>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <div class="page-header">
+    <h1>📅 Cronograma Escolar</h1>
+    <p id="data-hoje"></p>
+  </div>
+
+  <div class="grid-2">
+
+    <div>
+      <div class="section-title">🕐 Horários do Dia</div>
+      <div class="card">
+        <div class="card-header">
+          <h2>⏰ Grade de Horários Diária</h2>
+          <span class="badge badge-blue">Seg–Sex</span>
+        </div>
+        <div class="card-body" style="padding:12px 16px;" id="lista-horarios"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">📌 Próximos Eventos</div>
+      <div id="lista-eventos"></div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-body" style="padding:14px 18px;">
+          <h4 style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Legenda</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><div style="width:12px;height:12px;border-radius:2px;background:var(--primary);"></div> Aula normal</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><div style="width:12px;height:12px;border-radius:2px;background:var(--secondary);"></div> Intervalo</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><div style="width:12px;height:12px;border-radius:2px;background:var(--accent);"></div> Almoço</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-header"><h2>📆 Bimestres 2026</h2></div>
+        <div class="card-body" style="padding:14px 18px;">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+              <span style="font-weight:600;font-size:13px;">1º Bimestre</span>
+              <span class="badge badge-blue">Fev – Abr</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+              <span style="font-weight:600;font-size:13px;">2º Bimestre</span>
+              <span class="badge badge-green">Mai – Jul</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+              <span style="font-weight:600;font-size:13px;">3º Bimestre</span>
+              <span class="badge badge-orange">Ago – Out</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+              <span style="font-weight:600;font-size:13px;">4º Bimestre</span>
+              <span class="badge badge-gray">Nov – Dez</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="js/dados.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  const usuario = exigirLogin();
+  preencherNavbar(usuario);
+  inicializarHamburger();
+  const painelLink = usuario.tipo === 'admin' ? 'dashboard-admin.html' : 'dashboard-tutor.html';
+  document.getElementById('link-painel').href = painelLink;
+  document.getElementById('nav-painel-link').href = painelLink;
+  document.getElementById('nav-link-painel').href = painelLink;
+  document.getElementById('data-hoje').textContent = capitalizar(dataAtualFormatada());
+
+  function renderizarCronograma() {
+    const cronograma = JSON.parse(localStorage.getItem('escola_cronograma') || '{}');
+    const horarios = cronograma.horarios || [];
+    const eventos = cronograma.eventos || [];
+
+    document.getElementById('lista-horarios').innerHTML = horarios.map(h => `
+      <div class="schedule-item ${h.tipo}" style="margin-bottom:4px;">
+        <div class="schedule-time">${h.hora}</div>
+        <div class="schedule-desc">${h.descricao}</div>
+      </div>`).join('');
+
+    const listaEventos = document.getElementById('lista-eventos');
+    if (!eventos.length) {
+      listaEventos.innerHTML = `<div class="card"><div class="card-body"><div class="empty-state"><div class="icon">📭</div><p>Nenhum evento próximo.</p></div></div></div>`;
+      return;
+    }
+    const cores = { importante:'var(--accent)', feriado:'var(--danger)', evento:'var(--secondary)', normal:'var(--primary)' };
+    listaEventos.innerHTML = eventos.map(ev => `
+      <div class="event-card" style="border-left-color:${cores[ev.tipo]||'var(--primary)'};margin-bottom:10px;">
+        <div class="event-date-box" style="background:${cores[ev.tipo]||'var(--primary)'}20;">
+          <div class="day" style="color:${cores[ev.tipo]||'var(--primary)'};">${ev.dia}</div>
+          <div class="month">${ev.mes}</div>
+        </div>
+        <div class="event-info"><h4>${ev.titulo}</h4><p>${ev.descricao}</p></div>
+      </div>`).join('');
+  }
+
+  renderizarCronograma();
+</script>
+
+</body>
+</html>

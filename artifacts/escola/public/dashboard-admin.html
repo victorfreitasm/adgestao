@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo - E.E. Prof. Antonio Dantas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Overlay e Sidebar Mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="sidebar-mobile" id="sidebar-mobile">
+  <strong style="font-size:13px; color:var(--text-muted); padding:4px 8px;">MENU</strong>
+  <a href="dashboard-admin.html" class="active">🏠 Painel</a>
+  <a href="cardapio.html">🍽️ Cardápio</a>
+  <a href="cronograma.html">📅 Cronograma</a>
+  <a href="informacoes.html">📋 Informações</a>
+  <hr style="border:1px solid var(--border); margin:8px 0;"/>
+  <a href="#" onclick="fazerLogout(); return false;">🚪 Sair</a>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="dashboard-admin.html" class="navbar-brand">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="logo-text">E.E. Prof. Antonio Dantas</div>
+      <div class="logo-sub">Gestão Escolar</div>
+    </div>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="dashboard-admin.html">🏠 Painel</a></li>
+    <li><a href="cardapio.html">🍽️ Cardápio</a></li>
+    <li><a href="cronograma.html">📅 Cronograma</a></li>
+    <li><a href="informacoes.html">📋 Informações</a></li>
+  </ul>
+  <div class="navbar-right">
+    <div class="user-badge">
+      <div class="avatar" id="navbar-avatar">?</div>
+      <div>
+        <div style="font-weight:600; font-size:12px;" id="navbar-nome">Admin</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="navbar-tipo">Administrador</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="fazerLogout()">Sair</button>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- Conteúdo Principal -->
+<main class="main-content">
+
+  <!-- Cabeçalho -->
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1>Painel Administrativo 🎓</h1>
+      <p id="data-hoje"></p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-outline" onclick="abrirModal('modal-aviso')">📢 Novo Aviso</button>
+      <a href="cardapio.html" class="btn btn-primary">🍽️ Editar Cardápio</a>
+    </div>
+  </div>
+
+  <!-- Cards de Estatísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon green">🍽️</div>
+      <div class="stat-info"><h3 id="total-almoco">0</h3><p>Total Almoços Hoje</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">🏫</div>
+      <div class="stat-info"><h3 id="total-salas">0</h3><p>Salas Cadastradas</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">✅</div>
+      <div class="stat-info"><h3 id="salas-enviadas">0</h3><p>Salas que Enviaram</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">👨‍🏫</div>
+      <div class="stat-info"><h3 id="total-tutores">0</h3><p>Tutores Ativos</p></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="tab-almoco">🍽️ Almoço de Hoje</button>
+    <button class="tab" data-tab="tab-avisos">📢 Avisos</button>
+    <button class="tab" data-tab="tab-salas">🏫 Salas</button>
+    <button class="tab" data-tab="tab-tutores">👨‍🏫 Tutores</button>
+  </div>
+
+  <!-- ===== TAB: ALMOÇO ===== -->
+  <div class="tab-content active" id="tab-almoco">
+    <div class="card">
+      <div class="card-header">
+        <h2>📊 Relatório de Almoço — <span id="data-relatorio"></span></h2>
+        <button class="btn btn-outline btn-sm" onclick="window.print()">📥 Imprimir</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Sala</th>
+              <th>Tutor(a)</th>
+              <th>Total na Sala</th>
+              <th>Alunos p/ Almoço</th>
+              <th>Horário</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-almoco"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3"><strong>TOTAL GERAL</strong></td>
+              <td><strong id="total-geral-almoco">0</strong> alunos</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: AVISOS ===== -->
+  <div class="tab-content" id="tab-avisos">
+    <div class="card">
+      <div class="card-header">
+        <h2>📢 Gerenciar Avisos</h2>
+        <button class="btn btn-primary btn-sm" onclick="abrirModal('modal-aviso')">+ Novo Aviso</button>
+      </div>
+      <div class="card-body" id="lista-avisos-admin"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: SALAS ===== -->
+  <div class="tab-content" id="tab-salas">
+    <div class="card">
+      <div class="card-header">
+        <h2>🏫 Gerenciar Salas</h2>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalSala()">+ Nova Sala</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome da Sala</th>
+              <th>Turno</th>
+              <th>Total de Alunos</th>
+              <th>Tutor Responsável</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-salas"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: TUTORES ===== -->
+  <div class="tab-content" id="tab-tutores">
+    <div class="card">
+      <div class="card-header">
+        <h2>👨‍🏫 Gerenciar Tutores</h2>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalTutor()">+ Novo Tutor</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Sala</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-tutores"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== MODAL: NOVO AVISO ===== -->
+<div class="modal-overlay" id="modal-aviso">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📢 Publicar Aviso</h2>
+      <button class="modal-close" onclick="fecharModal('modal-aviso')">✕</button>
+    </div>
+    <form id="form-aviso" novalidate>
+      <div class="form-group">
+        <label class="form-label">Título <span class="required">*</span></label>
+        <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Reunião de Pais" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mensagem <span class="required">*</span></label>
+        <textarea id="aviso-corpo" class="form-control" rows="4" placeholder="Descreva o aviso completo..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select id="aviso-tipo" class="form-control">
+          <option value="normal">📢 Informativo</option>
+          <option value="importante">⚠️ Importante</option>
+          <option value="urgente">🚨 Urgente</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="fecharModal('modal-aviso')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">📤 Publicar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: NOVA / EDITAR SALA ===== -->
+<div class="modal-overlay" id="modal-sala">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-sala-titulo">🏫 Nova Sala</h2>
+      <button class="modal-close" onclick="fecharModal('modal-sala')">✕</button>
+    </div>
+    <form id="form-sala" novalidate>
+      <input type="hidden" id="sala-id" value="" />
+      <div class="form-group">
+        <label class="form-label">Nome da Sala <span class="required">*</span></label>
+        <input type="text" id="sala-nome" class="form-control" placeholder="Ex: 3º Ano de Informática" required />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Turno</label>
+          <select id="sala-turno" class="form-control">
+            <option value="Manhã">Manhã</option>
+            <option value="Tarde">Tarde</option>
+            <option value="Integral">Integral</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total de Alunos</label>
+          <input type="number" id="sala-total" class="form-control" min="0" max="99" value="30" placeholder="30" />
+        </div>
+      </div>
+      <div id="sala-erro" class="alert alert-danger" style="display:none;">
+        <span class="alert-icon">✕</span>
+        <span id="sala-erro-texto"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="fecharModal('modal-sala')">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-salvar-sala">✅ Salvar Sala</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: NOVO / EDITAR TUTOR ===== -->
+<div class="modal-overlay" id="modal-tutor">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-tutor-titulo">👨‍🏫 Novo Tutor</h2>
+      <button class="modal-close" onclick="fecharModal('modal-tutor')">✕</button>
+    </div>
+    <form id="form-tutor" novalidate>
+      <input type="hidden" id="tutor-id" value="" />
+      <div class="form-group">
+        <label class="form-label">Nome Completo <span class="required">*</span></label>
+        <input type="text" id="tutor-nome" class="form-control" placeholder="Ex: Maria Oliveira" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail <span class="required">*</span></label>
+        <input type="email" id="tutor-email" class="form-control" placeholder="nome@escola.br" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="label-senha">
+          Senha <span class="required">*</span>
+          <span id="hint-senha" style="font-weight:400;color:var(--text-muted);font-size:11px;">(deixe em branco para não alterar)</span>
+        </label>
+        <input type="password" id="tutor-senha" class="form-control" placeholder="Mínimo 6 caracteres" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sala Responsável</label>
+        <select id="tutor-sala" class="form-control">
+          <option value="">— Sem sala atribuída —</option>
+        </select>
+      </div>
+      <div id="tutor-erro" class="alert alert-danger" style="display:none;">
+        <span class="alert-icon">✕</span>
+        <span id="tutor-erro-texto"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="fecharModal('modal-tutor')">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-salvar-tutor">✅ Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: CONFIRMAR EXCLUSÃO ===== -->
+<div class="modal-overlay" id="modal-confirmar">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <h2>⚠️ Confirmar Exclusão</h2>
+      <button class="modal-close" onclick="fecharModal('modal-confirmar')">✕</button>
+    </div>
+    <p style="font-size:14px;margin-bottom:8px;" id="confirmar-texto">Tem certeza que deseja remover este item?</p>
+    <p style="font-size:12px;color:var(--text-muted);">Esta ação não pode ser desfeita.</p>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-confirmar')">Cancelar</button>
+      <button class="btn btn-danger" id="btn-confirmar-ok">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/dados.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  /* ============================================
+     INICIALIZAÇÃO
+     ============================================ */
+  const usuario = exigirAdmin();
+  preencherNavbar(usuario);
+  inicializarHamburger();
+  inicializarTabs('body');
+
+  document.getElementById('data-hoje').textContent = capitalizar(dataAtualFormatada());
+  document.getElementById('data-relatorio').textContent = hoje();
+
+  /* ============================================
+     TAB: ALMOÇO — Tabela com relatório do dia
+     ============================================ */
+  function carregarTabelaAlmoco() {
+    const salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+    const relatorios = JSON.parse(localStorage.getItem('escola_relatorios') || '[]');
+    const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+    const relHoje = relatorios.filter(r => r.data === hoje());
+    const tbody = document.getElementById('tabela-almoco');
+
+    let totalAlmoco = 0;
+    let salasEnviaram = 0;
+
+    const linhas = salas.map(sala => {
+      const rel = relHoje.find(r => r.sala === sala.nome);
+      const tutorDaSala = usuarios.find(u => u.sala === sala.nome && u.tipo === 'tutor');
+      const nomeTutor = tutorDaSala ? tutorDaSala.nome : '—';
+      if (rel) {
+        totalAlmoco += rel.quantidade;
+        salasEnviaram++;
+        return `<tr>
+          <td><strong>${sala.nome}</strong></td>
+          <td style="font-size:13px;color:var(--text-muted);">${nomeTutor}</td>
+          <td>${sala.totalAlunos}</td>
+          <td><strong style="font-size:16px;color:var(--primary-dark);">${rel.quantidade}</strong></td>
+          <td style="font-size:12px;">${rel.hora}</td>
+          <td><span class="badge badge-blue">✓ Enviado</span></td>
+        </tr>`;
+      } else {
+        return `<tr>
+          <td><strong>${sala.nome}</strong></td>
+          <td style="font-size:13px;color:var(--text-muted);">${nomeTutor}</td>
+          <td>${sala.totalAlunos}</td>
+          <td style="color:var(--text-muted);">—</td>
+          <td style="font-size:12px;color:var(--text-muted);">—</td>
+          <td><span class="badge badge-orange">⏳ Pendente</span></td>
+        </tr>`;
+      }
+    });
+
+    if (!salas.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Nenhuma sala cadastrada. Adicione salas na aba <strong>Salas</strong>.</td></tr>`;
+    } else {
+      tbody.innerHTML = linhas.join('');
+    }
+
+    document.getElementById('total-geral-almoco').textContent = totalAlmoco;
+    document.getElementById('total-almoco').textContent = totalAlmoco;
+    document.getElementById('total-salas').textContent = salas.length;
+    document.getElementById('salas-enviadas').textContent = `${salasEnviaram}/${salas.length}`;
+    const tutores = usuarios.filter(u => u.tipo === 'tutor' && u.ativo);
+    document.getElementById('total-tutores').textContent = tutores.length;
+  }
+
+  /* ============================================
+     TAB: AVISOS — Lista e publicação
+     ============================================ */
+  function carregarAvisosAdmin() {
+    const avisos = JSON.parse(localStorage.getItem('escola_avisos') || '[]').sort((a, b) => b.id - a.id);
+    const c = document.getElementById('lista-avisos-admin');
+    if (!avisos.length) {
+      c.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Nenhum aviso publicado ainda.</p></div>`;
+      return;
+    }
+    c.innerHTML = avisos.map(a => `
+      <div class="aviso-card ${a.tipo}" style="margin-bottom:12px;">
+        <div class="aviso-header">
+          <span class="aviso-titulo">${a.titulo}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="aviso-data">${a.data}</span>
+            <button class="btn btn-danger btn-sm" onclick="excluirAviso(${a.id})">✕ Remover</button>
+          </div>
+        </div>
+        <p class="aviso-corpo">${a.corpo}</p>
+        <div class="aviso-footer">
+          <span class="badge ${a.tipo==='urgente'?'badge-red':a.tipo==='importante'?'badge-orange':'badge-blue'}">
+            ${a.tipo==='urgente'?'🚨 Urgente':a.tipo==='importante'?'⚠️ Importante':'📢 Informativo'}
+          </span>
+          <span style="font-size:11px;color:var(--text-muted);">— ${a.autor}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('form-aviso').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const titulo = document.getElementById('aviso-titulo').value.trim();
+    const corpo = document.getElementById('aviso-corpo').value.trim();
+    const tipo = document.getElementById('aviso-tipo').value;
+    if (!titulo || !corpo) { mostrarToast('Preencha título e mensagem.', 'danger'); return; }
+    const avisos = JSON.parse(localStorage.getItem('escola_avisos') || '[]');
+    avisos.unshift({ id: gerarId(), titulo, corpo, tipo, autor: usuario.nome, data: hoje(), ativo: true });
+    localStorage.setItem('escola_avisos', JSON.stringify(avisos));
+    fecharModal('modal-aviso'); this.reset();
+    carregarAvisosAdmin();
+    mostrarToast('Aviso publicado com sucesso!', 'success');
+  });
+
+  function excluirAviso(id) {
+    confirmarAcao('Deseja remover este aviso permanentemente?', () => {
+      const avisos = JSON.parse(localStorage.getItem('escola_avisos') || '[]').filter(a => a.id !== id);
+      localStorage.setItem('escola_avisos', JSON.stringify(avisos));
+      carregarAvisosAdmin();
+      mostrarToast('Aviso removido.', 'success');
+    });
+  }
+
+  /* ============================================
+     TAB: SALAS — CRUD completo
+     ============================================ */
+  function carregarTabelaSalas() {
+    const salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+    const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+    const tbody = document.getElementById('tabela-salas');
+
+    if (!salas.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">Nenhuma sala cadastrada. Clique em <strong>+ Nova Sala</strong> para adicionar.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = salas.map(s => {
+      const tutor = usuarios.find(u => u.sala === s.nome && u.tipo === 'tutor' && u.ativo);
+      return `<tr>
+        <td><strong>${s.nome}</strong></td>
+        <td><span class="badge badge-blue">${s.turno}</span></td>
+        <td>${s.totalAlunos} alunos</td>
+        <td style="font-size:13px;">${tutor ? tutor.nome : '<span style="color:var(--text-muted)">Sem tutor</span>'}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="abrirModalSala(${s.id})">✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirSala(${s.id}, '${s.nome.replace(/'/g,"\\'")}')">🗑️ Remover</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Abre modal para criar ou editar sala
+  function abrirModalSala(idSala) {
+    document.getElementById('sala-erro').style.display = 'none';
+    if (idSala) {
+      // Modo edição
+      const salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+      const sala = salas.find(s => s.id === idSala);
+      if (!sala) return;
+      document.getElementById('modal-sala-titulo').textContent = '✏️ Editar Sala';
+      document.getElementById('sala-id').value = sala.id;
+      document.getElementById('sala-nome').value = sala.nome;
+      document.getElementById('sala-turno').value = sala.turno;
+      document.getElementById('sala-total').value = sala.totalAlunos;
+      document.getElementById('btn-salvar-sala').textContent = '💾 Salvar Alterações';
+    } else {
+      // Modo criação
+      document.getElementById('modal-sala-titulo').textContent = '🏫 Nova Sala';
+      document.getElementById('sala-id').value = '';
+      document.getElementById('form-sala').reset();
+      document.getElementById('sala-total').value = '30';
+      document.getElementById('btn-salvar-sala').textContent = '✅ Criar Sala';
+    }
+    abrirModal('modal-sala');
+  }
+
+  document.getElementById('form-sala').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const idSala = document.getElementById('sala-id').value;
+    const nome = document.getElementById('sala-nome').value.trim();
+    const turno = document.getElementById('sala-turno').value;
+    const totalAlunos = parseInt(document.getElementById('sala-total').value) || 0;
+    const erroEl = document.getElementById('sala-erro');
+    const erroTexto = document.getElementById('sala-erro-texto');
+    erroEl.style.display = 'none';
+
+    if (!nome) { erroTexto.textContent = 'Informe o nome da sala.'; erroEl.style.display = 'flex'; return; }
+
+    const salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+    const duplicado = salas.find(s => s.nome.toLowerCase() === nome.toLowerCase() && String(s.id) !== String(idSala));
+    if (duplicado) { erroTexto.textContent = 'Já existe uma sala com este nome.'; erroEl.style.display = 'flex'; return; }
+
+    if (idSala) {
+      // Editar — também atualiza tutores que estavam na sala com o nome antigo
+      const idx = salas.findIndex(s => String(s.id) === String(idSala));
+      if (idx >= 0) {
+        const nomeAntigo = salas[idx].nome;
+        salas[idx] = { ...salas[idx], nome, turno, totalAlunos };
+        localStorage.setItem('escola_salas', JSON.stringify(salas));
+        // Atualiza tutores que tinham o nome antigo
+        if (nomeAntigo !== nome) {
+          const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+          usuarios.forEach(u => { if (u.sala === nomeAntigo) u.sala = nome; });
+          localStorage.setItem('escola_usuarios', JSON.stringify(usuarios));
+          // Atualiza relatórios também
+          const rels = JSON.parse(localStorage.getItem('escola_relatorios') || '[]');
+          rels.forEach(r => { if (r.sala === nomeAntigo) r.sala = nome; });
+          localStorage.setItem('escola_relatorios', JSON.stringify(rels));
+        }
+        mostrarToast('Sala atualizada com sucesso!', 'success');
+      }
+    } else {
+      // Criar
+      salas.push({ id: gerarId(), nome, turno, totalAlunos });
+      localStorage.setItem('escola_salas', JSON.stringify(salas));
+      mostrarToast(`Sala "${nome}" criada com sucesso!`, 'success');
+    }
+
+    fecharModal('modal-sala');
+    carregarTabelaSalas();
+    carregarTabelaAlmoco();
+    popularSelectSalas();
+  });
+
+  function excluirSala(id, nome) {
+    confirmarAcao(`Remover a sala "${nome}"? Os tutores vinculados a ela ficarão sem sala.`, () => {
+      let salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+      salas = salas.filter(s => s.id !== id);
+      localStorage.setItem('escola_salas', JSON.stringify(salas));
+      // Remove a sala dos tutores vinculados
+      const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+      usuarios.forEach(u => { if (u.sala === nome) u.sala = null; });
+      localStorage.setItem('escola_usuarios', JSON.stringify(usuarios));
+      carregarTabelaSalas();
+      carregarTabelaAlmoco();
+      popularSelectSalas();
+      mostrarToast('Sala removida.', 'success');
+    });
+  }
+
+  /* ============================================
+     TAB: TUTORES — CRUD completo
+     ============================================ */
+  function carregarTabelaTutores() {
+    const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+    const tutores = usuarios.filter(u => u.tipo === 'tutor');
+    const tbody = document.getElementById('tabela-tutores');
+
+    if (!tutores.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">Nenhum tutor cadastrado. Clique em <strong>+ Novo Tutor</strong> para adicionar.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = tutores.map(t => `
+      <tr>
+        <td><strong>${t.nome}</strong></td>
+        <td style="font-size:12px;color:var(--text-muted);">${t.email}</td>
+        <td style="font-size:13px;">${t.sala || '<span style="color:var(--text-muted)">—</span>'}</td>
+        <td><span class="badge ${t.ativo ? 'badge-blue' : 'badge-gray'}">${t.ativo ? 'Ativo' : 'Inativo'}</span></td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="abrirModalTutor(${t.id})">✏️ Editar</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleAtivoTutor(${t.id})">${t.ativo ? '🔒 Desativar' : '🔓 Ativar'}</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirTutor(${t.id}, '${t.nome.replace(/'/g,"\\'")}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  // Abre modal de criação ou edição de tutor
+  function abrirModalTutor(idTutor) {
+    document.getElementById('tutor-erro').style.display = 'none';
+    popularSelectSalas();
+
+    if (idTutor) {
+      // Modo edição
+      const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+      const tutor = usuarios.find(u => u.id === idTutor);
+      if (!tutor) return;
+      document.getElementById('modal-tutor-titulo').textContent = '✏️ Editar Tutor';
+      document.getElementById('tutor-id').value = tutor.id;
+      document.getElementById('tutor-nome').value = tutor.nome;
+      document.getElementById('tutor-email').value = tutor.email;
+      document.getElementById('tutor-senha').value = '';
+      document.getElementById('tutor-senha').placeholder = '(deixe em branco para não alterar)';
+      document.getElementById('tutor-sala').value = tutor.sala || '';
+      document.getElementById('label-senha').childNodes[0].textContent = 'Nova Senha ';
+      document.getElementById('hint-senha').style.display = 'inline';
+      document.getElementById('btn-salvar-tutor').textContent = '💾 Salvar Alterações';
+    } else {
+      // Modo criação
+      document.getElementById('modal-tutor-titulo').textContent = '👨‍🏫 Novo Tutor';
+      document.getElementById('tutor-id').value = '';
+      document.getElementById('form-tutor').reset();
+      document.getElementById('tutor-senha').placeholder = 'Mínimo 6 caracteres';
+      document.getElementById('label-senha').childNodes[0].textContent = 'Senha ';
+      document.getElementById('hint-senha').style.display = 'none';
+      document.getElementById('btn-salvar-tutor').textContent = '✅ Criar Tutor';
+    }
+
+    abrirModal('modal-tutor');
+  }
+
+  document.getElementById('form-tutor').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const idTutor = document.getElementById('tutor-id').value;
+    const nome = document.getElementById('tutor-nome').value.trim();
+    const email = document.getElementById('tutor-email').value.trim().toLowerCase();
+    const senha = document.getElementById('tutor-senha').value;
+    const sala = document.getElementById('tutor-sala').value;
+    const erroEl = document.getElementById('tutor-erro');
+    const erroTexto = document.getElementById('tutor-erro-texto');
+    erroEl.style.display = 'none';
+
+    if (!nome || !email) { erroTexto.textContent = 'Nome e e-mail são obrigatórios.'; erroEl.style.display = 'flex'; return; }
+    if (!idTutor && !senha) { erroTexto.textContent = 'A senha é obrigatória para novos tutores.'; erroEl.style.display = 'flex'; return; }
+    if (senha && senha.length < 6) { erroTexto.textContent = 'A senha deve ter pelo menos 6 caracteres.'; erroEl.style.display = 'flex'; return; }
+
+    const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+    const duplicado = usuarios.find(u => u.email === email && String(u.id) !== String(idTutor));
+    if (duplicado) { erroTexto.textContent = 'Já existe um usuário com este e-mail.'; erroEl.style.display = 'flex'; return; }
+
+    if (idTutor) {
+      // Editar tutor existente
+      const idx = usuarios.findIndex(u => String(u.id) === String(idTutor));
+      if (idx >= 0) {
+        usuarios[idx].nome = nome;
+        usuarios[idx].email = email;
+        usuarios[idx].sala = sala || null;
+        if (senha) usuarios[idx].senha = senha;
+        localStorage.setItem('escola_usuarios', JSON.stringify(usuarios));
+        mostrarToast(`Tutor "${nome}" atualizado!`, 'success');
+      }
+    } else {
+      // Criar novo tutor
+      usuarios.push({ id: gerarId(), nome, email, senha, tipo: 'tutor', sala: sala || null, ativo: true });
+      localStorage.setItem('escola_usuarios', JSON.stringify(usuarios));
+      mostrarToast(`Tutor "${nome}" criado com sucesso!`, 'success');
+    }
+
+    fecharModal('modal-tutor');
+    carregarTabelaTutores();
+    carregarTabelaAlmoco();
+  });
+
+  function toggleAtivoTutor(id) {
+    const usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+    const idx = usuarios.findIndex(u => u.id === id);
+    if (idx >= 0) {
+      usuarios[idx].ativo = !usuarios[idx].ativo;
+      localStorage.setItem('escola_usuarios', JSON.stringify(usuarios));
+      carregarTabelaTutores();
+      carregarTabelaAlmoco();
+      mostrarToast('Status atualizado.', 'success');
+    }
+  }
+
+  function excluirTutor(id, nome) {
+    confirmarAcao(`Remover o tutor "${nome}" permanentemente?`, () => {
+      let usuarios = JSON.parse(localStorage.getItem('escola_usuarios') || '[]');
+      usuarios = usuarios.filter(u => u.id !== id);
+      localStorage.setItem('escola_usuarios', JSON.stringify(usuarios));
+      carregarTabelaTutores();
+      carregarTabelaAlmoco();
+      mostrarToast('Tutor removido.', 'success');
+    });
+  }
+
+  /* ============================================
+     HELPERS
+     ============================================ */
+
+  // Popula selects de sala
+  function popularSelectSalas() {
+    const salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+    const opts = '<option value="">— Sem sala atribuída —</option>' +
+      salas.map(s => `<option value="${s.nome}">${s.nome}</option>`).join('');
+    document.getElementById('tutor-sala').innerHTML = opts;
+  }
+
+  // Modal de confirmação reutilizável
+  function confirmarAcao(texto, callback) {
+    document.getElementById('confirmar-texto').textContent = texto;
+    document.getElementById('btn-confirmar-ok').onclick = () => {
+      fecharModal('modal-confirmar');
+      callback();
+    };
+    abrirModal('modal-confirmar');
+  }
+
+  /* ============================================
+     INICIALIZAÇÃO
+     ============================================ */
+  carregarTabelaAlmoco();
+  carregarAvisosAdmin();
+  carregarTabelaSalas();
+  carregarTabelaTutores();
+  popularSelectSalas();
+</script>
+
+</body>
+</html>

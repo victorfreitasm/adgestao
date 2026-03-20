@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Tutor - E.E. Prof. Antonio Dantas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Overlay e Sidebar Mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="sidebar-mobile" id="sidebar-mobile">
+  <strong style="font-size:13px; color:var(--text-muted); padding:4px 8px;">MENU</strong>
+  <a href="dashboard-tutor.html" class="active">🏠 Painel</a>
+  <a href="cardapio.html">🍽️ Cardápio</a>
+  <a href="cronograma.html">📅 Cronograma</a>
+  <a href="informacoes.html">📋 Informações</a>
+  <hr style="border:1px solid var(--border); margin:8px 0;"/>
+  <a href="#" onclick="fazerLogout(); return false;">🚪 Sair</a>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="dashboard-tutor.html" class="navbar-brand">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="logo-text">E.E. Prof. Antonio Dantas</div>
+      <div class="logo-sub">Gestão Escolar</div>
+    </div>
+  </a>
+
+  <ul class="navbar-nav">
+    <li><a href="dashboard-tutor.html">🏠 Painel</a></li>
+    <li><a href="cardapio.html">🍽️ Cardápio</a></li>
+    <li><a href="cronograma.html">📅 Cronograma</a></li>
+    <li><a href="informacoes.html">📋 Informações</a></li>
+  </ul>
+
+  <div class="navbar-right">
+    <div class="user-badge">
+      <div class="avatar" id="navbar-avatar">?</div>
+      <div>
+        <div style="font-weight:600; font-size:12px;" id="navbar-nome">Tutor</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="navbar-tipo">Tutor</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="fazerLogout()">Sair</button>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Conteúdo Principal -->
+<main class="main-content">
+
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <h1>Bom dia, <span id="nome-tutor">Professor(a)</span>! 👋</h1>
+    <p id="data-hoje" style="color:var(--text-muted);"></p>
+  </div>
+
+  <!-- Cards de Resumo -->
+  <div class="stats-grid" style="margin-bottom:24px;">
+    <div class="stat-card">
+      <div class="stat-icon green">🏫</div>
+      <div class="stat-info">
+        <h3 id="stat-sala">-</h3>
+        <p>Minha Sala</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">🍽️</div>
+      <div class="stat-info">
+        <h3 id="stat-alunos-enviados">-</h3>
+        <p>Alunos p/ Almoço (hoje)</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">📢</div>
+      <div class="stat-info">
+        <h3 id="stat-avisos">0</h3>
+        <p>Avisos Novos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grade principal -->
+  <div class="grid-2">
+
+    <!-- Coluna Esquerda -->
+    <div>
+      <!-- Card: Registrar Alunos p/ Almoço -->
+      <div class="card section" id="card-almoco">
+        <div class="card-header">
+          <h2>🍽️ Alunos para o Almoço</h2>
+          <span id="status-envio" class="status-pendente">⏳ Pendente</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">
+            Informe quantos alunos da sua sala ficarão para o almoço hoje.
+            O prazo para envio é às <strong>10h00</strong>.
+          </p>
+
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+            <div class="alunos-input-group">
+              <button class="alunos-btn" type="button" onclick="ajustarAlunos(-1)">−</button>
+              <input type="number" class="alunos-input" id="qtd-alunos" value="0" min="0" max="99" />
+              <button class="alunos-btn" type="button" onclick="ajustarAlunos(1)">+</button>
+            </div>
+            <div>
+              <div style="font-size:13px; font-weight:600;">alunos para almoço</div>
+              <div style="font-size:11px; color:var(--text-muted);">de <span id="total-alunos-sala">0</span> na sala</div>
+            </div>
+          </div>
+
+          <div id="ultimo-envio" style="display:none; margin-bottom:16px;" class="alert alert-success">
+            <span class="alert-icon">✓</span>
+            <span id="ultimo-envio-texto"></span>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="btn-enviar" onclick="enviarRelatorio()">
+            📤 Enviar Informação
+          </button>
+        </div>
+        <div class="card-footer">
+          <small style="color:var(--text-muted);">
+            ⏰ Envie até <strong>10h00</strong> para garantir o preparo correto da refeição.
+          </small>
+        </div>
+      </div>
+
+      <!-- Card: Cardápio do Dia -->
+      <div class="card section">
+        <div class="card-header">
+          <h2>🥗 Cardápio de Hoje</h2>
+          <a href="cardapio.html" style="font-size:12px; color:var(--primary);">Ver completo →</a>
+        </div>
+        <div class="card-body" id="cardapio-hoje"></div>
+      </div>
+    </div>
+
+    <!-- Coluna Direita: Avisos -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h2>📢 Avisos da Escola</h2>
+          <span class="badge badge-blue" id="qtd-avisos-badge">0</span>
+        </div>
+        <div class="card-body" id="lista-avisos"></div>
+        <div class="card-footer">
+          <a href="informacoes.html" style="font-size:12px;">Ver todas as informações da escola →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Scripts -->
+<script src="js/dados.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  const usuario = exigirLogin();
+  if (usuario && usuario.tipo === 'admin') {
+    window.location.href = 'dashboard-admin.html';
+  }
+
+  preencherNavbar(usuario);
+  inicializarHamburger();
+
+  document.getElementById('nome-tutor').textContent = usuario.nome.split(' ')[0];
+  document.getElementById('data-hoje').textContent = capitalizar(dataAtualFormatada());
+
+  const salas = JSON.parse(localStorage.getItem('escola_salas') || '[]');
+  const minhaSala = salas.find(s => s.nome === usuario.sala);
+  document.getElementById('stat-sala').textContent = usuario.sala || '—';
+  document.getElementById('total-alunos-sala').textContent = minhaSala ? minhaSala.totalAlunos : 0;
+
+  function verificarEnvioHoje() {
+    const relatorios = JSON.parse(localStorage.getItem('escola_relatorios') || '[]');
+    const envioHoje = relatorios.find(r => r.tutorEmail === usuario.email && r.data === hoje());
+    if (envioHoje) {
+      document.getElementById('qtd-alunos').value = envioHoje.quantidade;
+      document.getElementById('stat-alunos-enviados').textContent = envioHoje.quantidade;
+      document.getElementById('status-envio').className = 'status-enviado';
+      document.getElementById('status-envio').innerHTML = '✓ Enviado';
+      document.getElementById('ultimo-envio').style.display = 'flex';
+      document.getElementById('ultimo-envio-texto').textContent =
+        `Enviado às ${envioHoje.hora}: ${envioHoje.quantidade} aluno(s) para o almoço.`;
+      document.getElementById('btn-enviar').textContent = '🔄 Atualizar Informação';
+    } else {
+      document.getElementById('stat-alunos-enviados').textContent = 'Não enviado';
+    }
+  }
+
+  function ajustarAlunos(delta) {
+    const input = document.getElementById('qtd-alunos');
+    input.value = Math.max(0, parseInt(input.value || 0) + delta);
+  }
+
+  function enviarRelatorio() {
+    const qtd = parseInt(document.getElementById('qtd-alunos').value || 0);
+    const relatorios = JSON.parse(localStorage.getItem('escola_relatorios') || '[]');
+    const novos = relatorios.filter(r => !(r.tutorEmail === usuario.email && r.data === hoje()));
+    novos.push({
+      id: gerarId(),
+      sala: usuario.sala,
+      tutorEmail: usuario.email,
+      quantidade: qtd,
+      data: hoje(),
+      hora: horaAtual()
+    });
+    localStorage.setItem('escola_relatorios', JSON.stringify(novos));
+    document.getElementById('status-envio').className = 'status-enviado';
+    document.getElementById('status-envio').innerHTML = '✓ Enviado';
+    document.getElementById('stat-alunos-enviados').textContent = qtd;
+    document.getElementById('ultimo-envio').style.display = 'flex';
+    document.getElementById('ultimo-envio-texto').textContent =
+      `Enviado às ${horaAtual()}: ${qtd} aluno(s) confirmado(s).`;
+    document.getElementById('btn-enviar').textContent = '🔄 Atualizar Informação';
+    mostrarToast(`${qtd} aluno(s) confirmado(s) para o almoço!`, 'success');
+  }
+
+  function carregarCardapio() {
+    const cardapio = JSON.parse(localStorage.getItem('escola_cardapio') || '{}');
+    const dia = diaSemanaAtual();
+    const menu = cardapio[dia];
+    const c = document.getElementById('cardapio-hoje');
+    if (!menu) {
+      c.innerHTML = `<div class="empty-state"><div class="icon">🍽️</div><p>Cardápio não disponível</p></div>`;
+      return;
+    }
+    c.innerHTML = `
+      <div class="menu-section"><h4>🥩 Prato Principal</h4>
+        <div class="menu-items"><span class="menu-item">🍖 ${menu.prato_principal}</span></div>
+      </div>
+      <div class="menu-section"><h4>🍚 Acompanhamentos</h4>
+        <div class="menu-items">
+          <span class="menu-item">🍚 ${menu.acompanhamento}</span>
+          <span class="menu-item">🫘 ${menu.guarnicao}</span>
+        </div>
+      </div>
+      <div class="menu-section"><h4>🥗 Salada</h4>
+        <div class="menu-items"><span class="menu-item">🥗 ${menu.salada}</span></div>
+      </div>
+      <div class="menu-section"><h4>🍬 Sobremesa & Suco</h4>
+        <div class="menu-items">
+          <span class="menu-item">🍎 ${menu.sobremesa}</span>
+          <span class="menu-item">🧃 ${menu.suco}</span>
+        </div>
+      </div>`;
+  }
+
+  function carregarAvisos() {
+    const avisos = JSON.parse(localStorage.getItem('escola_avisos') || '[]')
+      .filter(a => a.ativo).sort((a, b) => b.id - a.id);
+    const c = document.getElementById('lista-avisos');
+    document.getElementById('qtd-avisos-badge').textContent = avisos.length;
+    document.getElementById('stat-avisos').textContent = avisos.length;
+    if (!avisos.length) {
+      c.innerHTML = `<div class="empty-state"><div class="icon">📭</div><h3>Nenhum aviso</h3></div>`;
+      return;
+    }
+    c.innerHTML = avisos.map(a => `
+      <div class="aviso-card ${a.tipo}">
+        <div class="aviso-header">
+          <span class="aviso-titulo">${a.titulo}</span>
+          <span class="aviso-data">${a.data}</span>
+        </div>
+        <p class="aviso-corpo">${a.corpo}</p>
+        <div class="aviso-footer">
+          <span class="badge ${a.tipo === 'urgente' ? 'badge-red' : a.tipo === 'importante' ? 'badge-orange' : 'badge-blue'}">
+            ${a.tipo === 'urgente' ? '🚨 Urgente' : a.tipo === 'importante' ? '⚠️ Importante' : '📢 Informativo'}
+          </span>
+          <span style="font-size:11px;color:var(--text-muted);">— ${a.autor}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  verificarEnvioHoje();
+  carregarCardapio();
+  carregarAvisos();
+</script>
+
+</body>
+</html>
